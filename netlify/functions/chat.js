@@ -10,10 +10,7 @@ exports.handler = async function (event) {
     const { history, userText, assistantName, personality } = JSON.parse(event.body);
     const apiKey = process.env.GEMINI_API_KEY;
 
-    console.log('apiKey present:', !!apiKey, 'length:', apiKey ? apiKey.length : 0);
-
     if (!apiKey) {
-      console.error('GEMINI_API_KEY is missing from environment variables.');
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'GEMINI_API_KEY is not set in Netlify environment variables.' })
@@ -31,7 +28,7 @@ exports.handler = async function (event) {
     ];
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,11 +42,7 @@ exports.handler = async function (event) {
 
     const data = await response.json();
 
-    console.log('Gemini status:', response.status);
-    console.log('Gemini response body:', JSON.stringify(data));
-
     if (!response.ok) {
-      console.error('Gemini API returned an error:', JSON.stringify(data));
       return { statusCode: response.status, body: JSON.stringify({ error: data }) };
     }
 
@@ -62,7 +55,6 @@ exports.handler = async function (event) {
       body: JSON.stringify({ text })
     };
   } catch (err) {
-    console.error('Function threw an exception:', err.message, err.stack);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
