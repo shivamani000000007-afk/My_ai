@@ -158,7 +158,7 @@
   <header>
     <div class="brand voice-name-row">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#E8A87C" stroke-width="1.5"/><path d="M8 13.5c1 1.2 2.4 1.8 4 1.8s3-.6 4-1.8" stroke="#E8A87C" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9.5" r="1" fill="#E8A87C"/><circle cx="15" cy="9.5" r="1" fill="#E8A87C"/></svg>
-      <input id="assistantName" value="Sana" spellcheck="false" />
+      <input id="assistantName" value="Bot Prana" spellcheck="false" />
     </div>
     <div class="header-actions">
       <div class="icon-btn" id="settingsBtn" title="Settings">
@@ -199,8 +199,8 @@
 
     <div class="field">
       <label>Cloned-voice endpoint <span style="opacity:.6">(your Hugging Face Space URL)</span></label>
-      <input id="cloneEndpoint" type="text" placeholder="https://yourname-voiceclone.hf.space/run/predict" autocomplete="off" />
-      <div class="hint">This is the free Fish Audio (open-source) Space running your voice sample. See the README in the project files for how to set this up.</div>
+      <input id="cloneEndpoint" type="text" placeholder="https://her-voice-xxxx.onrender.com/synthesize" autocomplete="off" />
+      <div class="hint">This is your Render server running your trained Piper voice model. Include the full /synthesize path at the end.</div>
     </div>
 
     <div class="field">
@@ -232,7 +232,7 @@ const cloneStatusText = document.getElementById('cloneStatusText');
 const langPills = document.querySelectorAll('.lang-pill');
 
 let state = {
-  assistantName: 'Sana',
+  assistantName: 'Bot Prana',
   personality: 'warm, a little playful, keeps it brief and natural like a real conversation',
   cloneEndpoint: '',
   micLang: 'ta-IN',
@@ -259,7 +259,7 @@ saveSettings.onclick = () => {
 };
 
 assistantNameInput.addEventListener('input', () => {
-  state.assistantName = assistantNameInput.value.trim() || 'Sana';
+  state.assistantName = assistantNameInput.value.trim() || 'Bot Prana';
 });
 
 langPills.forEach(pill => {
@@ -312,11 +312,11 @@ async function getAssistantReply(userText){
 async function speak(text){
   if (state.cloneEndpoint) {
     try {
-      statusLine.textContent = 'Speaking in your cloned voice…';
+      statusLine.textContent = 'Speaking in your cloned voice… (first message after a while may take ~30-50s to wake up)';
       const res = await fetch(state.cloneEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: [text] })
+        body: JSON.stringify({ text: text })
       });
       if (!res.ok) throw new Error('Voice clone endpoint failed');
       const blob = await res.blob();
@@ -351,7 +351,7 @@ async function handleUserText(userText){
     speak(reply);
   } catch (err) {
     typing.remove();
-    addMessage('assistant', "Something went wrong reaching the brain — try again in a moment.");
+    addMessage('assistant', `Something went wrong reaching the brain: ${err.message}`);
     statusLine.textContent = '';
   }
 }
