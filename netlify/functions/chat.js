@@ -43,6 +43,7 @@ exports.handler = async function (event) {
     const data = await response.json();
 
     if (!response.ok) {
+      console.error('Gemini API error:', response.status, JSON.stringify(data));
       return { statusCode: response.status, body: JSON.stringify({ error: data }) };
     }
 
@@ -55,6 +56,7 @@ exports.handler = async function (event) {
       body: JSON.stringify({ text })
     };
   } catch (err) {
+    console.error('Function error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
